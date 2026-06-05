@@ -17,6 +17,9 @@ WORKDIR /app
 
 # Copia o jar gerado (demo-0.0.1-SNAPSHOT.jar)
 COPY --from=build /app/target/*.jar app.jar
+# Índice IVF como arquivo standalone, mapeado via mmap em runtime (fora do heap).
+# Como app1 e app2 usam a mesma imagem, ambos mapeiam o mesmo arquivo (page cache compartilhado).
+COPY --from=build /app/target/classes/static/reference/references.ivf /app/references.ivf
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
