@@ -66,10 +66,10 @@ A solução **pré-computa um índice** no **build** e em produção apenas o **
 ```
   BUILD (uma vez, dentro do mvn package)            RUNTIME (cada requisição)
   ┌───────────────────┐   ┌───────────────┐          ┌──────────────┐   ┌─────────────────┐
-  │references.json.gz │─▶ │IvfIndexBuilder│──┐       │references.ivf│──▶│ IvfIndexReader  │
-  └───────────────────┘   │k-means + SQ8  │  │ ▶ .ivf└──────────────┘   │(mmap, off-heap) │
+  │references.json.gz │─> │IvfIndexBuilder│──┐       │references.ivf│──>│ IvfIndexReader  │
+  └───────────────────┘   │k-means + SQ8  │  │ ->.ivf└──────────────┘   │(mmap, off-heap) │
                           └───────────────┘  │         (43 MB)          └───────┬─────────┘
-                                             └─────────────▶┌───────────────────▼─────────┐
+                                             └─────────────>┌───────────────────▼─────────┐
                                                             │busca IVF: 8 clusters → top-5│
                                                             │  → voto de fraude → decisão │
                                                             └─────────────────────────────┘
