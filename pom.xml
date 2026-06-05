@@ -48,6 +48,39 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<!-- O .gz é insumo só de build; fora do jar para reduzir a imagem. O .ivf é gerado antes do package. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>static/reference/references.json.gz</exclude>
+						<exclude>static/reference/references.ivf</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<!-- Gera o índice IVF+SQ8 (references.ivf) a partir do references.json.gz no build -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>build-ivf-index</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>com.joao.rinha.index.IvfIndexBuilder</mainClass>
+							<arguments>
+								<argument>${project.build.outputDirectory}/static/reference/references.json.gz</argument>
+								<argument>${project.build.outputDirectory}/static/reference/references.ivf</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

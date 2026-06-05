@@ -4,15 +4,28 @@ services:
     platform: linux/amd64
     environment:
       - SERVER_PORT=8080
+      # Índice fica fora do heap (mmap), então o heap pode ser pequeno.
+      - JAVA_TOOL_OPTIONS=-Xmx80m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -Xss512k
     networks:
       - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.45"
+          memory: "163M"
   app2:
     build: .
     platform: linux/amd64
     environment:
       - SERVER_PORT=8080
+      - JAVA_TOOL_OPTIONS=-Xmx80m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -Xss512k
     networks:
       - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.45"
+          memory: "163M"
   nginx:
     image: nginx:latest
     platform: linux/amd64
@@ -25,6 +38,11 @@ services:
       - app2
     networks:
       - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: "24M"
 networks:
   backend:
     driver: bridge
